@@ -1,7 +1,7 @@
 # Minecraft-Server
 Minecraft Server using Raspberry PI 4, Ubuntu and Docker
 
-Based on this [video](https://www.youtube.com/watch?v=eIHiRW4QH6I&t=1015s)
+Mostly based on this [video](https://www.youtube.com/watch?v=eIHiRW4QH6I&t=1015s).
 
 # Installing Ubuntu Server
 ## Option 1 
@@ -102,11 +102,150 @@ sudo apt install docker-compose
 
 Step 9: Verify the installation
 
-
-# Setting Up The Server 
-
 To verify that Docker is installed and running, you can run:
 
 ```
 sudo docker --version
 ```
+
+
+
+# Setting Up The Server
+
+Create a new directory for the new container 
+
+
+```
+mkdir mc-docker
+```
+
+### Docker Run Command
+
+Paste this command to run the container
+
+```
+sudo docker run \
+  -d \
+  -it \
+  --name mcserver \
+  --restart=unless-stopped \
+  -e MEMORYSIZE="2G" \
+  -p 25565:25565 \
+  -p 25575:25575 \
+  -v /home/luciano/mc-docker:/data:rw \
+  -i  marctv/minecraft-papermc-server:1.21.3-34
+```
+
+You can change this command as you need, here you define container name, allocated RAM, ports and game version.
+See supported game versions [here](https://hub.docker.com/r/marctv/minecraft-papermc-server/tags?page=2).
+
+
+After running the container, log into Minecraft, select Multiplayer->Add Server and enter the Local RaspberryPi Address. You should be able to see the server online. 
+P.S: Only people in the same network can join during this step.
+
+### Cracked Accounts 
+If you are using a cracked launcher like TLauncher, you should change the server properties file.
+
+go to mc-docker directory and edit the server.properties, using (sudo) nano or vi.
+
+set
+
+```
+online_mode=false
+```
+
+## Useful Commands 
+
+Start Container
+```
+sudo docker start mcserver
+```
+
+Stop Container (Use before shutting down the computer)
+```
+sudo docker stop mcserver
+```
+
+Remove Container
+```
+sudo docker rm mcserver
+```
+
+See Logs
+```
+sudo docker logs mcserver
+```
+
+# Enabling External Players 
+
+The correct way to allow external players to join is to use Port Forwading, but since your network provider may not allow that, and my goal here is to play with friends we will set up a virtual network using ZeroTier.
+
+
+### ZeroTier
+You should download ZeroTier on you RaspberryPi
+
+**Step 1: Install ZeroTier Using the Official Repository**
+Download the ZeroTier installation script:
+
+```
+curl -s https://install.zerotier.com | sudo bash
+```
+
+This will automatically install the correct version of ZeroTier for your system.
+
+Verify the installation:
+
+After installation, check if ZeroTier is installed correctly by running:
+
+```
+zerotier-cli --version
+```
+
+
+**Step 2: Join a ZeroTier Network**
+
+Once ZeroTier is installed, follow the steps from the previous message to create a network and join it.
+
+1.Create a ZeroTier account and create a network at [ZeroTier Central](https://my.zerotier.com/).
+
+2.Join the network on your Ubuntu server:
+
+```
+sudo zerotier-cli join <your-network-id>
+```
+
+3.Authorize your server on the ZeroTier dashboard.
+
+**Step 3: Authorize Your Device in the ZeroTier Dashboard**
+
+    Go to the ZeroTier Central dashboard.
+    Select the network you created.
+    You should see your server listed under "Members" with a status of "Offline" or "Unmanaged" until it’s authorized.
+    Authorize your server by checking the box next to the device and clicking the "Save" button.
+
+**Step 4: Find Your ZeroTier IP Address**
+
+Your server now has a ZeroTier IP address, which your friends will use to connect to your Minecraft server.
+
+To find the ZeroTier IP address of your server:
+
+sudo zerotier-cli listnetworks
+
+Look for the IP address in the 10.x.x.x range (this is the ZeroTier virtual network address).
+
+
+**Step 5 Change server.properties**
+
+edit the server.properties file in the mc-docker directory
+
+set 
+```
+server-ip=0.0.0.0
+```
+
+this way the server will use both the virtual and local IPs.
+
+**Step 6 Friends**
+Your friend should now install ZeroTier on their Operating System and request to join your network.
+They should enter Minecraft->Multiplayer->Add Server, insert the RaspberryPi virtual IP. 
+They should now be able to enter your server.
