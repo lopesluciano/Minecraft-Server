@@ -1,6 +1,8 @@
 # Minecraft-Server
 Minecraft Server using Raspberry PI 4, Ubuntu and Docker
 
+Should work on any system running a Debian based Linux Distro.
+
 Mostly based on this [video](https://www.youtube.com/watch?v=eIHiRW4QH6I&t=1015s).
 
 # Installing Ubuntu Server
@@ -250,3 +252,39 @@ this way the server will use both the virtual and local IPs.
 Your friend should now install ZeroTier on their Operating System and request to join your network.
 They should enter Minecraft->Multiplayer->Add Server, insert the RaspberryPi virtual IP. 
 They should now be able to enter your server.
+
+
+# BONUS: Saving Map Files
+
+Create another Github repository to keep the file saves (i dont recomend forking this one to keep things organized).
+
+On the raspberrypi create a backups folder 
+
+```
+mkdir backups
+cd backups
+```
+
+inside backups folder, clone the Github repository you just created for the map files.
+```
+git clone https://github.com/user/insert_repo_name/.../ .
+```
+Now everytime you want to save the map you should follow this routine:
+```
+cd ~/backups
+
+git pull origin master
+
+cd ~/mc-docker
+
+sudo cp -r ~/mc-docker/world ~/backups/
+sudo cp -r ~/mc-docker/world_nether ~/backups/
+sudo cp -r ~/mc-docker/world_the_end ~/backups/
+
+cd ~/backups
+
+sudo git add . 
+sudo git commit -m "Backup"
+
+sudo git push origin master
+```
