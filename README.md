@@ -234,7 +234,7 @@ sudo zerotier-cli listnetworks
 Look for the IP address in the 10.x.x.x range (this is the ZeroTier virtual network address).
 
 
-**Step 5 Change server.properties**
+**Step 5: Change server.properties**
 
 edit the server.properties file in the mc-docker directory
 
@@ -245,7 +245,8 @@ server-ip=0.0.0.0
 
 this way the server will use both the virtual and local IPs.
 
-**Step 6 Friends**
+**Step 6: Friends**
+
 Your friend should now install ZeroTier on their Operating System and request to join your network.
 They should enter Minecraft->Multiplayer->Add Server, insert the RaspberryPi virtual IP. 
 They should now be able to enter your server.
