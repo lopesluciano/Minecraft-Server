@@ -1,5 +1,5 @@
 # Minecraft-Server
-Minecraft Server using Raspberry PI 4, Ubuntu and Docker
+Minecraft Server Tutorial using Raspberry PI 4, Ubuntu and Docker
 
 Should work on any system running a Debian based Linux Distro.
 
